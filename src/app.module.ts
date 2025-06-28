@@ -1,0 +1,17 @@
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { PrismaService } from './database/prisma.service';
+import { RocketMembersRepository } from './repositories/rocket-members-repository';
+import { PrismaRocketMembersRepository } from './repositories/prisma/prisma-rocket-members-repository';
+import { DevelopersModule } from './developers/developers.module';
+
+@Module({
+  imports: [DevelopersModule],
+  controllers: [AppController],
+  providers: [PrismaService,{
+    provide: RocketMembersRepository,
+    useClass: PrismaRocketMembersRepository
+  }],
+})
+export class AppModule {}
