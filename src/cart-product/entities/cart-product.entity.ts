@@ -10,18 +10,18 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'product' })
+@Entity({ name: 'cart_product' })
 export class CartProdutEntity {
   @PrimaryGeneratedColumn('rowid')
   id: number;
 
-  @Column({ name: 'cart_id', nullable: false })
+  @Column({ name: 'cart_id', nullable: true })
   cartId: number;
 
-  @Column({ name: 'product_id', nullable: false })
+  @Column({ name: 'product_id', nullable: true })
   productId: number;
 
-  @Column({ name: 'amount', nullable: false })
+  @Column({ name: 'amount', nullable: true })
   amount: number;
 
   @CreateDateColumn({ name: 'created_at' })
