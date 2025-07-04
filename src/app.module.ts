@@ -18,6 +18,9 @@ import { ProductModule } from './product/product.module';
 import { CartService } from './cart/cart.service';
 import { CartModule } from './cart/cart.module';
 import { CartProductModule } from './cart-product/cart-product.module';
+import { PaymentStatusService } from './payment-status/payment-status.service';
+import { PaymentStatusModule } from './payment-status/payment-status.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -47,6 +50,8 @@ import { CartProductModule } from './cart-product/cart-product.module';
     ProductModule,
     CartModule,
     CartProductModule,
+    PaymentStatusModule,
+    PaymentModule,
   ],
   controllers: [],
   //providers: [CacheService, AuthService], 
@@ -56,7 +61,8 @@ import { CartProductModule } from './cart-product/cart-product.module';
 
       provide: APP_GUARD,
       useClass: RolesGuard,
-    }
+    },
+    PaymentStatusService
   ],
 })
 export class AppModule { }
