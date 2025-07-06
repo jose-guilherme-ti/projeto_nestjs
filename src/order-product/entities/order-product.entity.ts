@@ -6,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,7 +23,7 @@ export class OrderProductEntity {
   productId: number;
 
   @Column({ name: 'amount', nullable: false })
-  amount: Date;
+  amount: number;
 
   @Column({ name: 'price', nullable: false })
   price: number;
@@ -33,11 +34,11 @@ export class OrderProductEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToMany(() => OrderEntity, (order) => order.ordersProduct)
+  @ManyToOne(() => OrderEntity, (order) => order.ordersProduct)
   @JoinColumn({ name: 'order_id', referencedColumnName: 'id' })
   order?: OrderEntity;
 
-  @ManyToMany(() => ProductEntity, (product) => product.ordersProduct)
+  @ManyToOne(() => ProductEntity, (product) => product.ordersProduct)
   @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
   product?: ProductEntity;
 }
