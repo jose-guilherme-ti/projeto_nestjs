@@ -72,14 +72,18 @@ export class OrderService {
 
     await this.createOrderProductUsingCart(cart, order.id, products);
 
-     await this.cartService.clearCart(userId);
+    await this.cartService.clearCart(userId);
     return order;
   }
 
-   async findOrdersByUserId(userId: number): Promise<OrderEntity[]> {
+  async findOrdersByUserId(
+    userId?: number,
+    orderId?: number,
+  ): Promise<OrderEntity[]> {
     const orders = await this.orderRepository.find({
       where: {
         userId,
+        id: orderId,
       },
       relations: {
         address: true,
@@ -89,6 +93,7 @@ export class OrderService {
         payment: {
           paymentStatus: true,
         },
+        user: !!orderId,
       },
     });
 
@@ -97,5 +102,35 @@ export class OrderService {
     }
 
     return orders;
+  }
+  async findAllOrders(): Promise<OrderEntity[]> {
+    const orders = await this.orderRepository.find({
+      relations: {
+        user: true,
+      },
+    });
+
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException('Orders not found');
+    }
+
+     const ordersProduct =
+      await this.orderProductService.findAmountProductsByOrderId(
+        orders.map((order) => order.id),
+      );
+
+    return orders.map((order) => {
+      const orderProduct = ordersProduct.find(
+        (currentOrder) => currentOrder.order_id === order.id,
+      );
+
+      if (orderProduct) {
+        return {
+          ...order,
+          amountProducts: Number(orderProduct.total),
+        };
+      }
+      return order;
+    });
   }
 }

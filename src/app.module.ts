@@ -23,6 +23,8 @@ import { PaymentStatusModule } from './payment-status/payment-status.module';
 import { PaymentModule } from './payment/payment.module';
 import { OrderProductModule } from './order-product/order-product.module';
 import { OrderModule } from './order/order.module';
+import { CorreiosService } from './correios/correios.service';
+import { CorreiosModule } from './correios/correios.module';
 
 @Module({
   imports: [
@@ -56,6 +58,7 @@ import { OrderModule } from './order/order.module';
     PaymentModule,
     OrderProductModule,
     OrderModule,
+    CorreiosModule,
   ],
   controllers: [],
   //providers: [CacheService, AuthService], 
@@ -66,7 +69,8 @@ import { OrderModule } from './order/order.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    PaymentStatusService
+    PaymentStatusService,
+  /*   CorreiosService */
   ],
 })
 export class AppModule { }
