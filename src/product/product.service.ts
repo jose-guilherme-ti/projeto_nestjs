@@ -6,6 +6,9 @@ import { CategoryService } from 'src/category/category.service';
 import { CreateProductDTO } from './dtos/create-product.dto';
 import { UpdateProductDTO } from './dtos/update-product.dto';
 import { CountProduct } from './dtos/count-product.dto';
+import { CorreiosService } from 'src/correios/correios.service';
+import { SizeProductDTO } from 'src/correios/dtos/size-product.dto';
+import { CdServiceEnum } from 'src/correios/enum/cd-service.enum';
 
 @Injectable()
 export class ProductService {
@@ -13,10 +16,25 @@ export class ProductService {
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
     @Inject(forwardRef(() => CategoryService))
-     private readonly categoryService: CategoryService,
-  ) {}
+    private readonly categoryService: CategoryService,
+    private readonly correiosService: CorreiosService,
+  ) { }
 
- async findAll(
+  async findPriceDelivery(cep: string, idProduct: number): Promise<any> {
+    const product = await this.findProductById(idProduct);
+
+    const sizeProduct = new SizeProductDTO(product);
+
+    const returnCorreios = await this.correiosService.priceDelivery(
+      CdServiceEnum.PAC,
+      cep,
+      sizeProduct,
+    );
+
+    return returnCorreios;
+  }
+
+  async findAll(
     productId?: number[],
     isFindRelations?: boolean,
   ): Promise<ProductEntity[]> {
@@ -48,7 +66,7 @@ export class ProductService {
     return products;
   }
 
-   async createProduct(createProduct: CreateProductDTO): Promise<ProductEntity> {
+  async createProduct(createProduct: CreateProductDTO): Promise<ProductEntity> {
     await this.categoryService.findCategoryById(createProduct.categoryId);
 
     return this.productRepository.save({
@@ -70,8 +88,8 @@ export class ProductService {
     return product;
   }
 
-  async deleteProduct(productId: number): Promise<{deleted: DeleteResult, product: ProductEntity }> {
-    const product  = await this.findProductById(productId);
+  async deleteProduct(productId: number): Promise<{ deleted: DeleteResult, product: ProductEntity }> {
+    const product = await this.findProductById(productId);
     const deleted = await this.productRepository.delete({ id: productId })
     return {
       deleted,
@@ -79,7 +97,7 @@ export class ProductService {
     };
   }
 
-   async updateProduct(
+  async updateProduct(
     updateProduct: UpdateProductDTO,
     productId: number,
   ): Promise<ProductEntity> {
@@ -91,7 +109,7 @@ export class ProductService {
     });
   }
 
-   async countProdutsByCategoryId(): Promise<CountProduct[]> {
+  async countProdutsByCategoryId(): Promise<CountProduct[]> {
     return this.productRepository
       .createQueryBuilder('product')
       .select('product.category_id, COUNT(*) as total')
